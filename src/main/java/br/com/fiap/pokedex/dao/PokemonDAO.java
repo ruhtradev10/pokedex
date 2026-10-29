@@ -14,11 +14,17 @@ import java.util.ArrayList;
 public class PokemonDAO {
 
     private Connection conectar() throws SQLException {
-        Dotenv dotenv = Dotenv.load();
+        String url = System.getenv("DB_URL");
+        String usuario = System.getenv("DB_USER");
+        String senha = System.getenv("DB_PASSWORD");
 
-        String url = dotenv.get("DB_URL");
-        String usuario = dotenv.get("DB_USER");
-        String senha = dotenv.get("DB_PASSWORD");
+        if (url == null || usuario == null || senha == null) {
+            Dotenv dotenv = Dotenv.load();
+
+            url = dotenv.get("DB_URL");
+            usuario = dotenv.get("DB_USER");
+            senha = dotenv.get("DB_PASSWORD");
+        }
 
         return DriverManager.getConnection(url, usuario, senha);
     }
@@ -85,8 +91,8 @@ public class PokemonDAO {
     }
 
     public void cadastrar(PokemonTO pokemon) throws SQLException {
-        String sql = "INSERT INTO POKEMON (NOME, TIPO, ALTURA, PESO, DATA_DE_CAPTURA) " +
-                "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO POKEMON (NOME, TIPO, ALTURA, PESO, DATA_DE_CAPTURA) "
+                + "VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conexao = conectar();
              PreparedStatement comando = conexao.prepareStatement(sql)) {
@@ -107,8 +113,8 @@ public class PokemonDAO {
     }
 
     public boolean atualizar(int codigo, PokemonTO pokemon) throws SQLException {
-        String sql = "UPDATE POKEMON SET NOME = ?, TIPO = ?, ALTURA = ?, PESO = ?, " +
-                "DATA_DE_CAPTURA = ? WHERE CODIGO = ?";
+        String sql = "UPDATE POKEMON SET NOME = ?, TIPO = ?, ALTURA = ?, PESO = ?, "
+                + "DATA_DE_CAPTURA = ? WHERE CODIGO = ?";
 
         try (Connection conexao = conectar();
              PreparedStatement comando = conexao.prepareStatement(sql)) {
@@ -137,8 +143,8 @@ public class PokemonDAO {
              PreparedStatement comando = conexao.prepareStatement(sql)) {
 
             comando.setInt(1, codigo);
+
             return comando.executeUpdate() > 0;
         }
     }
 }
-
